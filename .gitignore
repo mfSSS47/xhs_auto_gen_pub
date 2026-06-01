@@ -1,0 +1,42 @@
+# Python
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+
+# Secrets
+.env
+.encryption_key
+
+# Database
+*.db
+
+# Temp
+_claude_request.json
+_claude_response.json
+full_body.txt
+
+# Logs
+logs/
+
+# Uploads
+web/uploads/
+
+# Debug scripts
+_debug_publish2.py
+_publish_final.py
+_verify_notes.py
+_verify_publish.py
+show_last.py
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# Claude internal
+.claude/
+
+# Garbage / debug artifacts
+=*
+_debug_*

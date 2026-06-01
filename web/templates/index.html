@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block title %}发布新帖 — XHS 助手{% endblock %}
+
+{% block content %}
+<div class="form-card">
+    <h2>发布小红书帖子</h2>
+    <p class="subtitle">填写以下信息，选择发布模式</p>
+
+    <!-- Mode selector -->
+    <div class="mode-selector" id="mode-selector">
+        <div class="mode-option active" data-mode="direct">
+            <span class="mode-icon">🚀</span>
+            <span class="mode-label">一键发布</span>
+            <span class="mode-desc">生成→审核→发布全自动</span>
+        </div>
+        <div class="mode-option" data-mode="preview">
+            <span class="mode-icon">👀</span>
+            <span class="mode-label">先预览再发布</span>
+            <span class="mode-desc">生成后人工审核再发布</span>
+        </div>
+    </div>
+
+    <form id="publish-form" enctype="multipart/form-data">
+        <input type="hidden" name="mode" id="mode-input" value="direct">
+
+        <div class="form-group">
+            <label for="title">文章标题 <span class="required">*</span></label>
+            <input type="text" id="title" name="title" required
+                   placeholder="输入帖子标题（不超过20字）"
+                   maxlength="100">
+            <small>小红书平台限制标题 ≤ 20 字符，超出会自动截断</small>
+        </div>
+
+        <div class="form-group">
+            <label for="requirements">对内容的要求 <span class="required">*</span></label>
+            <textarea id="requirements" name="requirements" required
+                      rows="6"
+                      placeholder="描述你希望帖子包含什么内容、用什么风格、重点讲什么...&#10;&#10;例如：&#10;- 轻松口语化风格，像朋友聊天一样&#10;- 核心讲3个要点&#10;- 每段不超过2句话&#10;- 结尾引导评论互动"></textarea>
+        </div>
+
+        <div class="form-group">
+            <label>上传图片（可选）</label>
+            <div class="upload-zone" id="upload-zone">
+                <div class="upload-zone-content">
+                    <span class="upload-icon">📷</span>
+                    <p>拖拽图片到此处，或点击上传</p>
+                    <p class="upload-hint">支持 JPG、PNG、WebP 格式</p>
+                </div>
+                <input type="file" id="image-input" name="images" multiple
+                       accept=".jpg,.jpeg,.png,.webp">
+            </div>
+            <div class="image-previews" id="image-previews"></div>
+        </div>
+
+        <button type="submit" class="btn-primary" id="submit-btn">
+            开始生成并发布
+        </button>
+
+        <div class="form-status" id="form-status"></div>
+    </form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+{% endblock %}

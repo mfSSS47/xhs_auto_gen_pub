@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+{% block title %}任务进度 — XHS 助手{% endblock %}
+
+{% block head %}
+<meta http-equiv="refresh" content="900">
+{% endblock %}
+
+{% block content %}
+<div class="status-card">
+    <h2>任务进度</h2>
+    <p class="job-id">Job ID: {{ job_id }}</p>
+
+    <!-- Progress bar -->
+    <div class="progress-stages" id="progress-stages">
+        <div class="stage" data-stage="queued">
+            <div class="stage-dot"></div>
+            <span>排队中</span>
+        </div>
+        <div class="stage" data-stage="creating_direction">
+            <div class="stage-dot"></div>
+            <span>创建方向</span>
+        </div>
+        <div class="stage" data-stage="generating">
+            <div class="stage-dot"></div>
+            <span>生成内容</span>
+        </div>
+        <div class="stage" data-stage="reviewing">
+            <div class="stage-dot"></div>
+            <span>审核</span>
+        </div>
+        <div class="stage" data-stage="awaiting_approval">
+            <div class="stage-dot"></div>
+            <span>等待确认</span>
+        </div>
+        <div class="stage" data-stage="publishing">
+            <div class="stage-dot"></div>
+            <span>发布中</span>
+        </div>
+        <div class="stage" data-stage="completed">
+            <div class="stage-dot"></div>
+            <span>完成</span>
+        </div>
+    </div>
+
+    <!-- Current status -->
+    <div class="current-status" id="current-status">
+        <div class="spinner" id="spinner"></div>
+        <span id="status-text">加载中...</span>
+    </div>
+
+    <!-- Current status -->
+    <div class="preview-box hidden" id="preview-box">
+        <h3>内容预览 — 请审核后发布</h3>
+        <div class="preview-section">
+            <div class="preview-label">标题</div>
+            <div class="preview-title" id="p-title"></div>
+        </div>
+        <div class="preview-section">
+            <div class="preview-label">正文</div>
+            <div class="preview-body" id="p-body"></div>
+        </div>
+        <div class="preview-section">
+            <div class="preview-label">话题标签</div>
+            <div class="preview-tags" id="p-tags"></div>
+        </div>
+        <div class="preview-section">
+            <div class="preview-label">AI 评分</div>
+            <span class="preview-score" id="p-score"></span>
+        </div>
+        <div class="preview-actions">
+            <button class="btn-primary" id="approve-btn" onclick="approveAndPublish()">
+                确认并发布
+            </button>
+            <button class="btn-secondary" id="reject-btn" onclick="rejectPost()">
+                内容不满意，重新生成
+            </button>
+        </div>
+        <div class="form-status" id="preview-status"></div>
+    </div>
+
+    <!-- Error -->
+    <div class="error-box hidden" id="error-box">
+        <h3>任务失败</h3>
+        <pre id="error-text"></pre>
+    </div>
+
+    <!-- Result -->
+    <div class="result-box hidden" id="result-box">
+        <h3>发布成功！</h3>
+        <table class="result-table">
+            <tr><td>标题</td><td id="r-title"></td></tr>
+            <tr><td>正文</td><td><div class="scroll-body" id="r-body"></div></td></tr>
+            <tr><td>话题</td><td id="r-hashtags"></td></tr>
+            <tr><td>评分</td><td id="r-score"></td></tr>
+            <tr><td>平台 ID</td><td id="r-platform"></td></tr>
+        </table>
+    </div>
+
+    <div class="actions">
+        <a href="{{ url_for('main.index') }}" class="btn-secondary">再发一篇</a>
+        <a href="{{ url_for('main.job_list') }}" class="btn-secondary">查看历史</a>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const JOB_ID = "{{ job_id }}";
+</script>
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+{% endblock %}

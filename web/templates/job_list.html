@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}历史记录 — XHS 助手{% endblock %}
+
+{% block content %}
+<div class="list-card">
+    <h2>发布历史</h2>
+    {% if jobs %}
+    <table class="job-table">
+        <thead>
+            <tr>
+                <th>时间</th>
+                <th>标题</th>
+                <th>状态</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for j in jobs %}
+            <tr>
+                <td>{{ j.created_at.strftime('%m-%d %H:%M') if j.created_at else '-' }}</td>
+                <td>{{ j.title[:30] }}</td>
+                <td>
+                    <span class="badge badge-{{ j.status }}">{{ j.status }}</span>
+                </td>
+                <td>
+                    <a href="{{ url_for('main.status', job_id=j.id) }}">查看</a>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p class="empty">暂无历史记录</p>
+    {% endif %}
+</div>
+{% endblock %}
