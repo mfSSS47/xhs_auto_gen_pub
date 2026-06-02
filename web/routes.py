@@ -44,6 +44,27 @@ def job_list():
         db.close()
 
 
+@main_bp.route("/posts")
+def posts_page():
+    db = SessionLocal()
+    try:
+        posts = db.query(Post).order_by(Post.created_at.desc()).limit(50).all()
+        return render_template("posts.html", posts=posts)
+    finally:
+        db.close()
+
+
+@main_bp.route("/accounts")
+def accounts_page():
+    db = SessionLocal()
+    try:
+        from models.user import Account
+        accounts = db.query(Account).order_by(Account.created_at.desc()).all()
+        return render_template("accounts.html", accounts=accounts)
+    finally:
+        db.close()
+
+
 # ── API ──────────────────────────────────────────────
 
 @main_bp.route("/api/jobs", methods=["POST"])
@@ -167,5 +188,38 @@ def api_get_post(post_id: str):
             "status": post.status,
             "created_at": post.created_at.isoformat() if post.created_at else None,
         })
+    finally:
+        db.close()
+
+
+@main_bp.route("/api/accounts", methods=["POST"])
+def api_add_account():
+    credential = request.form.get("credential", "").strip()
+    nickname = request.form.get("nickname", "").strip()
+    if not credential:
+        return jsonify({"error": "Cookie不能为空"}), 400
+
+    from services.account_service import account_service
+    db = SessionLocal()
+    try:
+        acc = account_service.create_account(db=db, credential=credential, nickname=nickname)
+        return jsonify({"id": acc.id, "nickname": acc.nickname, "status": acc.status})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    finally:
+        db.close()
+
+@main_bp.route("/api/accounts/<account_id>", methods=["DELETE"])
+def api_delete_account(account_id: str):
+    from services.account_service import account_service
+    from core.exceptions import NotFoundError
+    db = SessionLocal()
+    try:
+        account_service.delete_account(db, account_id)
+        return jsonify({"ok": True})
+    except NotFoundError:
+        return jsonify({"error": "Account not found"}), 404
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
     finally:
         db.close()

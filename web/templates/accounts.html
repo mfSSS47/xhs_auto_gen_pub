@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% block title %}账号管理 — XHS 助手{% endblock %}
+
+{% block content %}
+<div class="form-card" style="margin-bottom:20px;">
+    <h2>添加账号</h2>
+    <p class="subtitle">粘贴小红书 Cookie 字符串，支持多账号管理</p>
+
+    <form id="account-form">
+        <div class="form-group">
+            <label for="acc-nickname">账号昵称</label>
+            <input type="text" id="acc-nickname" placeholder="如：我的小红书" maxlength="50">
+        </div>
+
+        <div class="form-group">
+            <label for="acc-credential">Cookie 字符串 <span class="required">*</span></label>
+            <textarea id="acc-credential" rows="3"
+                      placeholder="key1=value1; key2=value2; ..."></textarea>
+            <small>从浏览器 F12 → Application → Cookies 获取，拼接所有 cookie</small>
+        </div>
+
+        <button type="submit" class="btn-primary" id="acc-submit">添加账号</button>
+        <div class="form-status" id="acc-status"></div>
+    </form>
+</div>
+
+<div class="list-card">
+    <h2>已添加账号</h2>
+    {% if accounts %}
+    <table class="data-table">
+        <thead>
+            <tr><th>昵称</th><th>平台</th><th>状态</th><th>添加时间</th><th>操作</th></tr>
+        </thead>
+        <tbody>
+            {% for a in accounts %}
+            <tr>
+                <td>{{ a.nickname or '-' }}</td>
+                <td>{{ a.platform }}</td>
+                <td><span class="badge badge-{{ a.status }}">{{ a.status }}</span></td>
+                <td>{{ a.created_at.strftime('%m-%d %H:%M') if a.created_at else '-' }}</td>
+                <td><button class="btn-del" onclick="delAccount('{{ a.id }}')">删除</button></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p id="no-accounts" class="empty">暂无账号，请先添加</p>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.getElementById("account-form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const nickname = document.getElementById("acc-nickname").value.trim();
+    const credential = document.getElementById("acc-credential").value.trim();
+    const btn = document.getElementById("acc-submit");
+    const status = document.getElementById("acc-status");
+
+    if (!credential) { status.textContent = "Cookie 不能为空"; return; }
+
+    btn.disabled = true; btn.textContent = "添加中...";
+    status.textContent = "";
+
+    const fd = new FormData();
+    fd.append("credential", credential);
+    if (nickname) fd.append("nickname", nickname);
+
+    try {
+        const resp = await fetch("/api/accounts", { method: "POST", body: fd });
+        const data = await resp.json();
+        if (data.error) { status.textContent = data.error; }
+        else { status.textContent = "添加成功！"; location.reload(); }
+    } catch (err) {
+        status.textContent = "网络错误";
+    } finally {
+        btn.disabled = false; btn.textContent = "添加账号";
+    }
+});
+async function delAccount(id) {
+    if (!confirm('确定删除该账号？')) return;
+    try {
+        const resp = await fetch('/api/accounts/' + id, { method: 'DELETE' });
+        const data = await resp.json();
+        if (data.error) { alert(data.error); }
+        else { location.reload(); }
+    } catch (e) { alert('删除失败: ' + e.message); }
+}
+</script>
+{% endblock %}

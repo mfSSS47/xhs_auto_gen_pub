@@ -3,21 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}小红书内容发布{% endblock %}</title>
+    <title>{% block title %}XHS 发布助手{% endblock %}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     {% block head %}{% endblock %}
 </head>
 <body>
-    <nav class="navbar">
-        <div class="nav-brand">📕 XHS 发布助手</div>
-        <div class="nav-links">
-            <a href="{{ url_for('main.index') }}">发布新帖</a>
-            <a href="{{ url_for('main.job_list') }}">历史记录</a>
-        </div>
-    </nav>
-    <main class="container">
-        {% block content %}{% endblock %}
-    </main>
+    <div class="app-layout">
+        <!-- Left Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-brand">
+                <span class="sidebar-logo">📕</span>
+                <span class="sidebar-title">XHS 助手</span>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="{{ url_for('main.index') }}" class="sidebar-item {% if request.path == '/' %}active{% endif %}">
+                    <span class="sidebar-icon">✏️</span>
+                    <span>发布新帖</span>
+                </a>
+                <a href="{{ url_for('main.job_list') }}" class="sidebar-item {% if request.path == '/jobs' %}active{% endif %}">
+                    <span class="sidebar-icon">📋</span>
+                    <span>历史记录</span>
+                </a>
+                <a href="{{ url_for('main.accounts_page') }}" class="sidebar-item {% if request.path == '/accounts' %}active{% endif %}">
+                    <span class="sidebar-icon">👤</span>
+                    <span>账号管理</span>
+                </a>
+                <a href="{{ url_for('main.posts_page') }}" class="sidebar-item {% if request.path == '/posts' %}active{% endif %}">
+                    <span class="sidebar-icon">📝</span>
+                    <span>我的帖子</span>
+                </a>
+            </nav>
+            <div class="sidebar-footer">
+                <small>v2.0</small>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            {% block content %}{% endblock %}
+        </main>
+    </div>
     {% block scripts %}{% endblock %}
 </body>
 </html>

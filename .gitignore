@@ -40,3 +40,4 @@ show_last.py
 # Garbage / debug artifacts
 =*
 _debug_*
+*.bak
